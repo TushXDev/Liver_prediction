@@ -3,7 +3,7 @@ import pandas as pd
 import os
 
 # Test if model.pkl exists and loads correctly
-model_path = 'model.pkl'
+model_path = 'model_knn.pkl'
 
 print("=" * 60)
 print("MODEL VERIFICATION TEST")
@@ -132,3 +132,4 @@ except Exception as e:
     print(f"\n✗ Prediction failed: {e}")
     import traceback
     traceback.print_exc()
+
