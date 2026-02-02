@@ -8,7 +8,8 @@ on:
   schedule:
     - cron: '0 0 * * 0'  # Weekly check
 
-security:
+jobs:
+  security:
     runs-on: ubuntu-latest
     
     steps:
@@ -32,7 +33,7 @@ security:
         safety check --file requirements.txt --json || true
 
   build:
-    needs: [test, security]
+    needs: [security]
     runs-on: ubuntu-latest
     
     steps:
@@ -114,3 +115,4 @@ security:
     - name: Check for dependency updates
       run: |
         pip list --outdated || echo "All dependencies up to date"
+
