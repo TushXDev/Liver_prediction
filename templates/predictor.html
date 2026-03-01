@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liver Disease Predictor</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header class="hero compact">
+        <div class="hero-content">
+            <p class="eyebrow"><a href="{{ url_for('index') }}" class="link-plain">← Home</a></p>
+            <h1>Enter LFT values</h1>
+            <p class="subhead">Submit common liver function markers to get an instant prediction.</p>
+        </div>
+    </header>
+
+    <main class="form-shell">
+        <form id="predictForm" class="card form-card">
+            <div class="grid">
+                <label>
+                    <span>Name</span>
+                    <input type="text" name="Name" placeholder="Jane Doe">
+                </label>
+                <label>
+                    <span>Age</span>
+                    <input type="number" name="Age" min="1" step="1" required>
+                </label>
+                <label>
+                    <span>Total Bilirubin</span>
+                    <input type="number" name="Total Bilirubin" min="0" step="0.1" required>
+                </label>
+                <label>
+                    <span>Direct Bilirubin</span>
+                    <input type="number" name="Direct Bilirubin" min="0" step="0.1" required>
+                </label>
+                <label>
+                    <span>Alkaline Phosphatase</span>
+                    <input type="number" name="Alkaline Phosphatase" min="0" step="1" required>
+                </label>
+                <label>
+                    <span>Alanine Aminotransferase</span>
+                    <input type="number" name="Alamine Aminotransferase" min="0" step="1" required>
+                </label>
+                <label>
+                    <span>Aspartate Aminotransferase</span>
+                    <input type="number" name="Aspartate Aminotransferase" min="0" step="1" required>
+                </label>
+                <label>
+                    <span>Total Proteins</span>
+                    <input type="number" name="Total Proteins" min="0" step="0.1" required>
+                </label>
+                <label>
+                    <span>A/G Ratio</span>
+                    <input type="number" name="A/G Ratio" min="0" step="0.1" required>
+                </label>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn primary">Predict</button>
+                <button type="reset" class="btn ghost">Clear</button>
+            </div>
+
+            <div id="result" class="result"></div>
+        </form>
+
+        <section class="card note">
+            <h2>Tips</h2>
+            <ul>
+                <li>Albumin is derived automatically using Total Proteins and A/G Ratio.</li>
+                <li>Ensure values are from recent lab results for best accuracy.</li>
+                <li>API users can POST the same field names to <code>/predict</code>.</li>
+            </ul>
+        </section>
+    </main>
+
+    <script>
+        const form = document.getElementById('predictForm');
+        const resultBox = document.getElementById('result');
+
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            resultBox.textContent = 'Submitting...';
+            resultBox.className = 'result';
+
+            const formData = new FormData(form);
+            const payload = {};
+
+            for (const [key, value] of formData.entries()) {
+                if (value === '') continue;
+                payload[key] = key === 'Name' ? value : parseFloat(value);
+            }
+
+            try {
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await response.json();
+
+                if (!response.ok || !data.success) {
+                    const errorMsg = data.error || 'Unable to compute prediction';
+                    resultBox.textContent = errorMsg;
+                    resultBox.classList.add('error');
+                    return;
+                }
+
+                resultBox.innerHTML = `
+                    <div class="prediction">${data.prediction}</div>
+                    <p>Confidence: <strong>${data.confidence}%</strong></p>
+                    <p>Class 1: ${data.probability_class_1}% &nbsp; | &nbsp; Class 2: ${data.probability_class_2}%</p>
+                `;
+                resultBox.classList.add('success');
+            } catch (error) {
+                resultBox.textContent = 'Network error. Please try again.';
+                resultBox.classList.add('error');
+                console.error(error);
+            }
+        });
+    </script>
+</body>
+</html>

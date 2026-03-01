@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liver Disease Prediction</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header class="hero">
+        <div class="hero-content">
+            <p class="eyebrow">Liver Disease Prediction</p>
+            <h1>Screen liver health in seconds</h1>
+            <p class="subhead">
+                Input standard LFT markers to estimate liver disease risk using the trained ML model.
+            </p>
+            <div class="actions">
+                <a class="btn primary" href="{{ url_for('predictor') }}">Open predictor</a>
+                <a class="btn ghost" href="https://github.com/TushXDev/Liver_Disease_Prediction" target="_blank">View documentation</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="cards">
+        <div class="card">
+            <h2>How it works</h2>
+            <ul>
+                <li>Accepts standard LFT inputs such as bilirubin and enzymes</li>
+                <li>Derives Albumin automatically from Total Proteins and A/G ratio</li>
+                <li>Returns prediction with confidence and class probabilities</li>
+            </ul>
+        </div>
+        <div class="card">
+            <h2>API endpoint</h2>
+            <p class="mono">POST /predict</p>
+            <p>Send JSON payload matching the field names shown on the predictor page.</p>
+        </div>
+        <div class="card">
+            <h2>Deployment ready</h2>
+            <p>Procfile, requirements, and CI build are configured for quick hosting.</p>
+        </div>
+    </main>
+</body>
+</html>
